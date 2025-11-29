@@ -1,5 +1,4 @@
-# Debuggable FA-2 Streamlit app (improved)
-# Paste into app.py and run. This adds diagnostics to show why graphs may be empty.
+
 
 import os
 import streamlit as st
@@ -7,31 +6,28 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 
-st.set_page_config(page_title="Delivery Dashboard – FA2 (debug)", layout="wide")
-st.title("📦 Last-mile Delivery Dashboard — Debug Friendly")
+st.set_page_config(page_title="Delivery Dashboard – FA2", layout="wide")
+st.title("📦 Last-mile Delivery Dashboard")
 
-# ---- DATA PATH ----
+
 DATA_PATH = "Last mile Delivery Data.csv"
 if not os.path.exists(DATA_PATH):
     st.error(f"Dataset not found: {DATA_PATH}. Upload CSV to repo root.")
     st.stop()
 
-# ---- LOAD ----
-df_raw = pd.read_csv(DATA_PATH, dtype=str)  # read as strings first to inspect
+
+df_raw = pd.read_csv(DATA_PATH, dtype=str) 
 st.sidebar.markdown("*Data preview & diagnostics*")
 
-# ---- Normalize column names and trim whitespace in headers & values ----
+
 df_raw.columns = [c.strip() for c in df_raw.columns]
 df = df_raw.copy()
 for c in df.columns:
-    # trim string values and replace empty strings with NaN
     try:
         df[c] = df[c].astype(str).str.strip().replace({"": np.nan, "nan": np.nan, "None": np.nan})
     except Exception:
         pass
 
-# ---- attempt to map common column name variants to required names ----
-# common variants to look for
 variants = {
     "Delivery_Time": ["Delivery_Time", "Delivery Time", "delivery_time", "delivery time", "TimeTaken", "Time Taken"],
     "Weather": ["Weather", "weather", "WEATHER"],
@@ -52,7 +48,7 @@ for target, variant_list in variants.items():
         if v in available_cols:
             found = v
             break
-        # try case-insensitive match
+  
         for ac in available_cols:
             if ac.lower() == v.lower():
                 found = ac
@@ -64,17 +60,17 @@ for target, variant_list in variants.items():
     else:
         col_map[target] = None
 
-# Show mapping diagnostics
+
 st.sidebar.write("*Column mapping (target → file column)*")
 for k, v in col_map.items():
     st.sidebar.write(f"- {k}  →  {v}")
 
-# If essential Delivery_Time not found, stop with clear message
+
 if col_map["Delivery_Time"] is None:
     st.error("Could not find a column that contains delivery time. Check your CSV header names. Possible names: 'Delivery_Time' or 'Delivery Time'.")
     st.stop()
 
-# ---- Create working df with standard column names ----
+
 work = pd.DataFrame()
 for target in variants.keys():
     src = col_map.get(target)
@@ -83,12 +79,12 @@ for target in variants.keys():
     else:
         work[target] = np.nan
 
-# ---- Convert numeric columns safely ----
+
 for col in ["Delivery_Time", "Agent_Rating", "Agent_Age"]:
     if col in work.columns:
         work[col] = pd.to_numeric(work[col], errors="coerce")
 
-# Drop rows missing Delivery_Time (essential)
+
 before_rows = len(work)
 work = work.dropna(subset=["Delivery_Time"])
 after_rows = len(work)
@@ -96,7 +92,7 @@ after_rows = len(work)
 st.sidebar.write(f"Rows before dropping missing Delivery_Time: {before_rows}")
 st.sidebar.write(f"Rows after dropping missing Delivery_Time: {after_rows}")
 
-# Quick data preview and column list
+
 st.sidebar.markdown("### Data preview (first 5 rows)")
 st.sidebar.dataframe(work.head())
 
@@ -105,28 +101,27 @@ st.write("*Columns detected in file:*", list(df.columns))
 st.write("*Standardized columns used in analysis:*", list(work.columns))
 st.write(f"Rows available for analysis: {len(work)}")
 
-# Show value counts for the main categorical columns (helps spot weird values)
 with st.expander("Value counts (quick)"):
     for cat in ["Weather", "Traffic", "Vehicle", "Area", "Category"]:
         if cat in work.columns:
             st.write(f"{cat}")
             st.write(work[cat].value_counts(dropna=False).head(20))
 
-# ---- If after cleaning there are zero rows, stop with guidance ----
+
 if work.empty:
     st.error("After cleaning, there are 0 rows. Likely causes:\n"
              "• Delivery_Time column is empty or non-numeric everywhere.\n"
              "• Your CSV has header mismatches. Check header names and sample values shown in sidebar.")
     st.stop()
 
-# ---- Create Age_Group, Late flag ----
+
 work["Age_Group"] = pd.cut(work["Agent_Age"].fillna(-1), bins=[-1,24,40,200], labels=["<25","25-40","40+"], include_lowest=True).astype(str).replace("nan","Unknown")
 mean_dt = work["Delivery_Time"].mean()
 std_dt = work["Delivery_Time"].std()
 threshold = mean_dt + std_dt
 work["Late"] = (work["Delivery_Time"] > threshold).astype(int)
 
-# ---- Sidebar filters (use unique values from work) ----
+
 st.sidebar.markdown("---")
 st.sidebar.header("Filters (if graphs blank, check these)")
 
@@ -162,10 +157,10 @@ if filtered.empty:
                "• Check value counts in the diagnostics (sidebar) to choose valid options,\n"
                "• Or click the button below to reset filters.")
     if st.button("Reset filters"):
-        # simple page refresh workaround
+        
         st.experimental_rerun()
 
-# ---- KPIs ----
+
 st.subheader("Key metrics")
 col1, col2, col3 = st.columns(3)
 col1.metric("Avg Delivery Time (mins)", round(filtered["Delivery_Time"].mean(),2) if not filtered.empty else "—")
@@ -174,7 +169,7 @@ col3.metric("Late Deliveries (%)", f"{round(filtered['Late'].mean()*100,2) if le
 
 st.markdown("---")
 
-# ---- PLOTTING (always check for empty data before plotting) ----
+
 def safe_bar(df_plot, x, y, title):
     if df_plot.empty:
         st.info(f"No data to plot for {title}.")
