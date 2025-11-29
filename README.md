@@ -62,4 +62,16 @@ Includes:
 | Deployment - Localhost or Streamlit Cloud |
 
 --------------------------------------------------------------------------------------------------
+# Screenshots
+
+<img width="1681" height="709" alt="image" src="https://github.com/user-attachments/assets/c7645b47-77d9-447d-86d1-ab25225a8ee9" />
+<img width="1822" height="685" alt="image" src="https://github.com/user-attachments/assets/f6938c2f-a96d-4826-ab6f-7b247222b5e8" />
+<img width="1802" height="699" alt="image" src="https://github.com/user-attachments/assets/1ad13c59-d142-4dd0-9731-e4135f9e8ae8" />
+<img width="1741" height="735" alt="image" src="https://github.com/user-attachments/assets/7ee2e4fa-2d26-468b-a892-ce601aac2731" />
+<img width="1803" height="757" alt="image" src="https://github.com/user-attachments/assets/3e748a60-f482-4808-9fc8-13e231fc89f1" />
+<img width="1820" height="717" alt="image" src="https://github.com/user-attachments/assets/47b79261-3854-49be-a53c-e9c0704fb704" />
+<img width="1783" height="786" alt="image" src="https://github.com/user-attachments/assets/00c39c1f-1629-4dc4-85b6-e14632fd97c9" />
+
+
+
 
