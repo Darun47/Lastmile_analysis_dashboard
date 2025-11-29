@@ -2,7 +2,7 @@
 ### FA-2 Project — Maths for AI – II  
 ---
 
-## 📌 Overview  
+## Overview  
 This project is basically a Streamlit dashboard that is made to easily check how fast deliveries happen in the last step of the delivery process. The dashboard helps to understand what things are affecting the delivery time — like traffic, weather, distance, which vehicle is used, and which area the delivery is going to.
 It shows everything in a clean and understandable way so we can see what’s causing delays and how it can be improved.
 
@@ -10,7 +10,7 @@ The purpose is to provide a **data-driven solution** for improving last-mile log
 
 ---
 
-## 🎯 Project Objectives
+## Project Objectives
 
 - Analyze delivery time performance across different conditions  
 - Provide a clear, visual dashboard for delivery insights  
@@ -20,7 +20,7 @@ The purpose is to provide a **data-driven solution** for improving last-mile log
 
 ---
 
-## 📊 Key Features of the Dashboard
+## Key Features of the Dashboard
 
 ### 🔹 1. Sidebar Filters  
 The user can filter deliveries by:
